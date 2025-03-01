@@ -8,25 +8,25 @@ By reducing manual intervention, this smart fish tank not only enhances fish wel
 # Circuit Design  
 # Technologies used  
  ## 1. Microcontroller & Computing Platform
-•	ESP32 – A powerful microcontroller with built-in Wi-Fi and Bluetooth, used to control sensors, actuators, and enable remote monitoring.
+### •	ESP32 – A powerful microcontroller with built-in Wi-Fi and Bluetooth, used to control sensors, actuators, and enable remote monitoring.
 ## 2. Sensors for Water Quality Monitoring
 ### •	DS18B20 Temperature Sensor – Measures water temperature.
 ### •	Turbidity Sensor – Monitors water clarity to detect contamination or dirt buildup.
 ## 3. Actuators for Automation
-•	Relay-controlled Heater – Adjusts water temperature as needed.
-•	Water Filter System – Operates when water becomes turbid.
-•	Automatic Feeder – Dispenses fish food at scheduled intervals.
+### •	Relay-controlled Heater – Adjusts water temperature as needed.
+### •	Water Filter System – Operates when water becomes turbid.
+### •	Automatic Feeder – Dispenses fish food at scheduled intervals.
 ## 4. Communication & Data Processing
-•	I2C Protocol – Used for sensor communication (e.g., LCD display).
-•	GPIO Pins – Used to connect sensors and actuators directly to the ESP32.
-•	Wi-Fi (ESP32) – Enables remote monitoring and potential app integration.
+### •	I2C Protocol – Used for sensor communication (e.g., LCD display).
+### •	GPIO Pins – Used to connect sensors and actuators directly to the ESP32.
+### •	Wi-Fi (ESP32) – Enables remote monitoring and potential app integration.
 ## 5. User Interface & Display
-•	LCD Display (with I2C module) – Shows real-time sensor data for easy monitoring.
-•	Mobile App (Planned) – Could be developed in the future using Flutter or another framework for remote access.
+### •	LCD Display (with I2C module) – Shows real-time sensor data for easy monitoring.
+### •	Mobile App (Planned) – Could be developed in the future using Flutter or another framework for remote access.
 ## 6. Software & Development Tools
-•	Platform IO
-•	ESP IDF
-•	GitHub – Version control and code repository management.
+### •	Platform IO
+### •	ESP IDF
+### •	GitHub – Version control and code repository management.
 
 # References 	
 # Team & Mentor 
