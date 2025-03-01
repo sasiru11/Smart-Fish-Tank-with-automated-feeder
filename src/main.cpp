@@ -88,21 +88,21 @@ void loop() {
         int currentMinute = timeInfo.tm_min;
 
         // Servo rotation at 11:00 AM (Only once)
-        if (currentHour == 11 && currentMinute == 0 && !servoDone) {
+        if (currentHour == 20 && currentMinute == 49 && !servoDone) {
             rotateServo();
             servoDone = true;
             saveServoState(true);
         }
 
-        // Reset servo flag at midnight
-        if (currentHour == 0 && currentMinute == 0) {
-            servoDone = false;
-            saveServoState(false);
+        // Bulb ON at 6:00 AM, OFF at 6:00 PM (using hours and minutes)
+        if (currentHour == 6 && currentMinute == 00) {
+            digitalWrite(relayPin, HIGH);  // Bulb ON
+            Serial.println("Bulb ON at 6:00 AM");
+        } 
+        else if (currentHour == 18 && currentMinute == 00) {
+            digitalWrite(relayPin, LOW);  // Bulb OFF
+            Serial.println("Bulb OFF at 6:00 PM");
         }
-
-        // Bulb ON at 6:00 AM, OFF at 6:00 PM
-        digitalWrite(relayPin, (currentHour >= 6 && currentHour < 18) ? HIGH : LOW);
-        Serial.printf("Bulb State: %s\n", (digitalRead(relayPin) ? "ON" : "OFF"));
 
         // Water temperature control
         float waterTemp = readWaterTemperature();
@@ -112,7 +112,7 @@ void loop() {
         // Turbidity control
         float turbidity = readTurbidity();
         digitalWrite(acFilterPin, (turbidity > 25.0) ? LOW : HIGH);
-        Serial.printf("AC Filter State: %s\n", (digitalRead(acFilterPin) ? "ON" : "OFF"));
+        Serial.printf("AC Filter State: %s\n", (digitalRead(acFilterPin) ? "OFF" : "ON"));
     }
 }
 
