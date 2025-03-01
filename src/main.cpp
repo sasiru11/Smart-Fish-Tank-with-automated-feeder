@@ -88,7 +88,7 @@ void loop() {
         int currentMinute = timeInfo.tm_min;
 
         // Servo rotation at 11:00 AM (Only once)
-        if (currentHour == 20 && currentMinute == 49 && !servoDone) {
+        if (currentHour == 11 && currentMinute == 11 && !servoDone) {
             rotateServo();
             servoDone = true;
             saveServoState(true);
