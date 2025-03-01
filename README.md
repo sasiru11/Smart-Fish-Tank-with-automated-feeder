@@ -10,8 +10,8 @@ By reducing manual intervention, this smart fish tank not only enhances fish wel
  ## 1. Microcontroller & Computing Platform
 •	ESP32 – A powerful microcontroller with built-in Wi-Fi and Bluetooth, used to control sensors, actuators, and enable remote monitoring.
 ## 2. Sensors for Water Quality Monitoring
-•	DS18B20 Temperature Sensor – Measures water temperature.
-•	Turbidity Sensor – Monitors water clarity to detect contamination or dirt buildup.
+### •	DS18B20 Temperature Sensor – Measures water temperature.
+### •	Turbidity Sensor – Monitors water clarity to detect contamination or dirt buildup.
 ## 3. Actuators for Automation
 •	Relay-controlled Heater – Adjusts water temperature as needed.
 •	Water Filter System – Operates when water becomes turbid.
