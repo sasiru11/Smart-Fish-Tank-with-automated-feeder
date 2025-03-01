@@ -30,9 +30,9 @@ By reducing manual intervention, this smart fish tank not only enhances fish wel
 
 # References 	
 # Team & Mentor 
-Nidukani O.G.H		2019/E/085
-Gimhana M.K.G.C		2020/E/045
-Janananda J.S.M.R.R.B	2020/E/057
-Gedara S.G.S.N.S		2020/E/210
+#### Nidukani O.G.H		2019/E/085
+#### Gimhana M.K.G.C		2020/E/045
+#### Janananda J.S.M.R.R.B	2020/E/057
+#### Gedara S.G.S.N.S		2020/E/210
 
 
