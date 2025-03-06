@@ -21,7 +21,7 @@ const int servoPin = 18;
 // Bulb (Relay) settings
 const int relayPin = 19;
 
-// Water Temperature Sensor (DS18B20) - I2C optimization not applicable
+// Water Temperature Sensor (DS18B20)
 const int oneWireBus = 4;
 OneWire oneWire(oneWireBus);
 DallasTemperature sensors(&oneWire);
@@ -29,15 +29,10 @@ DallasTemperature sensors(&oneWire);
 // Heater control
 const int heaterPin = 21;
 
-// Turbidity Sensor (ADC Input)
+// Turbidity Sensor
 const int turbidityPin = 32;  
 const int acFilterPin = 22;  
 
-// EEPROM Addresses
-#define EEPROM_SIZE 10
-#define SERVO_DONE_ADDR 0  // EEPROM address for storing servo status
-
-bool servoDone = false;
 unsigned long lastCheckTime = 0;
 
 // Function prototypes
@@ -47,12 +42,9 @@ void printLocalTime();
 float readWaterTemperature();
 float readTurbidity();
 void rotateServo();
-void restoreServoState();
-void saveServoState(bool state);
 
 void setup() {
     Serial.begin(115200);
-    EEPROM.begin(EEPROM_SIZE);
     
     connectToWiFi();
     initNTP();
@@ -68,7 +60,6 @@ void setup() {
     digitalWrite(acFilterPin, LOW); // AC Filter OFF initially
 
     sensors.begin();
-    restoreServoState();
 }
 
 void loop() {
@@ -86,23 +77,24 @@ void loop() {
 
         int currentHour = timeInfo.tm_hour;
         int currentMinute = timeInfo.tm_min;
+        int currentSecond = timeInfo.tm_sec;
 
-        // Servo rotation at 11:00 AM (Only once)
-        if (currentHour == 11 && currentMinute == 11 && !servoDone) {
+        // Run feeder at 11:00 AM
+        if (currentHour == 11 && currentMinute == 00 && currentSecond == 0) {
+            Serial.println("Feeder ON 11:00 AM");
             rotateServo();
-            servoDone = true;
-            saveServoState(true);
+        }
+       
+        // Bulb ON from 6:00 AM to 6:00 PM
+        if ((currentHour > 6 || (currentHour == 6 && currentMinute >= 00)) &&
+            (currentHour < 18 || (currentHour == 18 && currentMinute < 00))) {
+            digitalWrite(relayPin, HIGH);  // Bulb ON
+            Serial.println("Bulb is ON (6:15 AM - 6:15 PM)");
+        } else {
+            digitalWrite(relayPin, LOW);  // Bulb OFF
+            Serial.println("Bulb is OFF (Night Mode)");
         }
 
-        // Bulb ON at 6:00 AM, OFF at 6:00 PM (using hours and minutes)
-        if (currentHour == 6 && currentMinute == 00) {
-            digitalWrite(relayPin, HIGH);  // Bulb ON
-            Serial.println("Bulb ON at 6:00 AM");
-        } 
-        else if (currentHour == 18 && currentMinute == 00) {
-            digitalWrite(relayPin, LOW);  // Bulb OFF
-            Serial.println("Bulb OFF at 6:00 PM");
-        }
 
         // Water temperature control
         float waterTemp = readWaterTemperature();
@@ -153,7 +145,7 @@ float readWaterTemperature() {
     return temperature;
 }
 
-// Read turbidity (with improved ADC handling)
+// Read turbidity
 float readTurbidity() {
     int turbidityRaw = analogRead(turbidityPin);
     float turbidity = map(turbidityRaw, 0, 4095, 100, 0);
@@ -163,24 +155,12 @@ float readTurbidity() {
 
 // Rotate servo motor
 void rotateServo() {
-    Serial.println("Rotating servo..."); 
+    Serial.println("Rotating Feeder..."); 
     for (int i = 0; i < 4; i++) {
-        myServo.write(90);
+        myServo.write(135);
         delay(500);
         myServo.write(0);
         delay(500);
     }
-    Serial.println("Rotation complete.");
+    Serial.println("Feeding complete.");
 }
-
-// Restore servo state from EEPROM
-void restoreServoState() {
-    servoDone = EEPROM.read(SERVO_DONE_ADDR);
-}
-
-// Save servo state to EEPROM
-void saveServoState(bool state) {
-    EEPROM.write(SERVO_DONE_ADDR, state);
-    EEPROM.commit();
-}
-
