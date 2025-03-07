@@ -3,7 +3,6 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <ESP32Servo.h>
-#include <EEPROM.h>
 
 // Wi-Fi credentials
 const char* ssid = "RRBJ-MIFI";
