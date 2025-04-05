@@ -79,16 +79,16 @@ void loop() {
         int currentSecond = timeInfo.tm_sec;
 
         // Run feeder at 11:00 AM
-        if (currentHour == 15 && currentMinute == 11 && currentSecond == 30) {
+        if (currentHour == 11 && currentMinute == 00 && currentSecond == 00) {
             Serial.println("Feeder ON 11:00 AM");
             rotateServo();
         }
        
         // Bulb ON from 6:00 AM to 6:00 PM
-        if ((currentHour > 15 || (currentHour == 15 && currentMinute >= 11)) &&
-            (currentHour < 15 || (currentHour == 15 && currentMinute < 12))) {
+        if ((currentHour > 6 || (currentHour == 6 && currentMinute >= 00)) &&
+            (currentHour < 18 || (currentHour == 18 && currentMinute < 00))) {
             digitalWrite(relayPin, HIGH);  // Bulb ON
-            Serial.println("Bulb is ON (6:15 AM - 6:15 PM)");
+            Serial.println("Bulb is ON (6:00 AM - 6:00 PM)");
         } else {
             digitalWrite(relayPin, LOW);  // Bulb OFF
             Serial.println("Bulb is OFF (Night Mode)");
