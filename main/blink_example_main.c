@@ -71,6 +71,7 @@ char Current_Date_Time[100];
 void time_sync_notification_cb(struct timeval *tv)
 {
     ESP_LOGI(TAG1, "Notification of a time synchronization event");
+    
 }
 static void event_handler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
