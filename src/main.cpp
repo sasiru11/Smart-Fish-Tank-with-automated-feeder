@@ -18,7 +18,7 @@ Servo myServo;
 const int servoPin = 18;
 
 // Bulb (Relay) settings
-const int relayPin = 19;
+const int relayPin = 2;
 
 // Water Temperature Sensor (DS18B20)
 const int oneWireBus = 4;
@@ -26,11 +26,11 @@ OneWire oneWire(oneWireBus);
 DallasTemperature sensors(&oneWire);
 
 // Heater control
-const int heaterPin = 21;
+const int heaterPin = 5;
 
 // Turbidity Sensor
-const int turbidityPin = 32;  
-const int acFilterPin = 22;  
+const int turbidityPin = 34;  
+const int acFilterPin = 18;  
 
 unsigned long lastCheckTime = 0;
 
