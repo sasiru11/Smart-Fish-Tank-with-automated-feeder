@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "D:/vs code/IDF/Smart-Fish-Tank-with-automated-feeder/Smart-Fish-Tank-with-automated-feeder/build/CMakeFiles/bootloader"
+		},
+		{
+			"file" : "D:/vs code/IDF/Smart-Fish-Tank-with-automated-feeder/Smart-Fish-Tank-with-automated-feeder/build/CMakeFiles/bootloader.rule"
+		},
+		{
+			"file" : "D:/vs code/IDF/Smart-Fish-Tank-with-automated-feeder/Smart-Fish-Tank-with-automated-feeder/build/CMakeFiles/bootloader-complete.rule"
+		},
+		{
+			"file" : "D:/vs code/IDF/Smart-Fish-Tank-with-automated-feeder/Smart-Fish-Tank-with-automated-feeder/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule"
+		},
+		{
+			"file" : "D:/vs code/IDF/Smart-Fish-Tank-with-automated-feeder/Smart-Fish-Tank-with-automated-feeder/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule"
+		},
+		{
+			"file" : "D:/vs code/IDF/Smart-Fish-Tank-with-automated-feeder/Smart-Fish-Tank-with-automated-feeder/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule"
+		},
+		{
+			"file" : "D:/vs code/IDF/Smart-Fish-Tank-with-automated-feeder/Smart-Fish-Tank-with-automated-feeder/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule"
+		},
+		{
+			"file" : "D:/vs code/IDF/Smart-Fish-Tank-with-automated-feeder/Smart-Fish-Tank-with-automated-feeder/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule"
+		},
+		{
+			"file" : "D:/vs code/IDF/Smart-Fish-Tank-with-automated-feeder/Smart-Fish-Tank-with-automated-feeder/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule"
+		},
+		{
+			"file" : "D:/vs code/IDF/Smart-Fish-Tank-with-automated-feeder/Smart-Fish-Tank-with-automated-feeder/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"bootloader"
+		],
+		"name" : "bootloader"
+	}
+}
