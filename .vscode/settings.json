@@ -11,7 +11,10 @@
     "files.associations": {
         "_locale.h": "c",
         "esp_sleep.h": "c",
-        "time.h": "c"
+        "time.h": "c",
+        "random": "c",
+        "chrono": "c",
+        "limits": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

@@ -11,6 +11,8 @@
 #include "esp_timer.h"
 #include "esp_event.h"
 #include "nvs_flash.h"
+#include "driver/ledc.h"
+#include "esp_err.h"
 //SNTP
 #include <time.h>
 #include <sys/time.h>
@@ -35,24 +37,39 @@
 //DS18B20 Pin
 #define DS18B20_GPIO 4
 
-//LIGHT Relay
+//Light Relay
 #define LIGHT_RELAY_GPIO 21
 
 //Heter Relay
 #define RELAY_GPIO 5
-#define TEMP_THRESHOLD_LOW  35.0
-#define TEMP_THRESHOLD_HIGH 36.5
+#define TEMP_THRESHOLD_LOW  25.0
+#define TEMP_THRESHOLD_HIGH 26.5
 
 //TURBIDITY Pin
-#define TURBIDITY_SENSOR_PIN ADC1_CHANNEL_6  // GPIO34 (ADC1 channel 6)
-#define ADC_WIDTH ADC_WIDTH_BIT_12           // 12-bit ADC resolution
-#define ADC_ATTEN ADC_ATTEN_DB_0            // ADC attenuation (0dB for 0-1V range)
 
-//Filter Relay
-#define FILTER_RELAY_GPIO 18
-#define TURBIDITY_THRESHOLD_HIGH 3200
-#define TURBIDITY_THRESHOLD_LOW 3300
+/////////
+#define TURBIDITY_ADC_CHANNEL   ADC1_CHANNEL_6   // GPIO34
+#define FILTER_RELAY_GPIO       GPIO_NUM_18
 
+#define TURBIDITY_THRESHOLD_ON   3000
+#define TURBIDITY_THRESHOLD_OFF  3300
+
+/////////////////////
+
+//SERVO PIN
+#define SERVO_PIN       19
+#define SERVO_MIN_US    500     // Min pulse width (0 degrees)
+#define SERVO_MAX_US    2500    // Max pulse width (180 degrees)
+#define SERVO_FREQ_HZ   50 
+
+// Convert microseconds to duty cycle (for 50Hz and 16-bit resolution)
+uint32_t servo_us_to_duty(uint32_t us) {
+    // 50Hz -> period = 20,000us
+    uint32_t max_duty = (1 << 16) - 1;
+    return (us * max_duty) / 20000;
+}
+
+//////////////////////////////////////////////////
 
 //WIFI and TIME Code START FROM HERE
 
@@ -67,11 +84,9 @@ static const char *TAG1 = "wifi station";
 
 char Current_Date_Time[100];
 
-
 void time_sync_notification_cb(struct timeval *tv)
 {
     ESP_LOGI(TAG1, "Notification of a time synchronization event");
-    
 }
 static void event_handler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
@@ -96,7 +111,6 @@ static void event_handler(void* arg, esp_event_base_t event_base,
         xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
     }
 }
-
 
 void wifi_init_sta(void)
 {
@@ -176,8 +190,6 @@ void wifi_init_sta(void)
     vEventGroupDelete(s_wifi_event_group);
 }
 
-
-
 void Get_current_date_time(char *date_time){
 	char strftime_buf[64];
 	time_t now;
@@ -195,7 +207,6 @@ void Get_current_date_time(char *date_time){
                 strcpy(date_time,strftime_buf);
 }
 
-
 static void initialize_sntp(void)
 {
     ESP_LOGI(TAG1, "Initializing SNTP");
@@ -209,7 +220,6 @@ static void initialize_sntp(void)
 }
 static void obtain_time(void)
 {
-
 
     initialize_sntp();
     // wait for time to be set
@@ -240,6 +250,8 @@ static void obtain_time(void)
 }
 //WIFI AND TIME CODE END HERE
 
+////////////////////////////////////////////////////////
+
 //Control bulb based on time function
 void control_bulb_based_on_time(void) {
     time_t now;
@@ -252,12 +264,11 @@ void control_bulb_based_on_time(void) {
 
     gpio_reset_pin(LIGHT_RELAY_GPIO);
     gpio_set_direction(LIGHT_RELAY_GPIO, GPIO_MODE_OUTPUT);
-    gpio_set_level(FILTER_RELAY_GPIO, 1);
+    
 
     // Check if the current time is between 06:00 AM and 06:00 PM
-    if ((hour > 6 || (hour == 6 && min >= 00)) && (hour < 18 || (hour == 18 && min < 00))) {
+    if ((hour > 06 || (hour == 06 && min >= 00)) && (hour < 18 || (hour == 18 && min < 00))) {
         // Turn on the bulb (GPIO High)
-
         gpio_set_level(BULB1_GPIO_PIN, 1); // Turn ON  
         gpio_set_level(LIGHT_RELAY_GPIO, 0);
         ESP_LOGI(TAG, "Bulb ON");    
@@ -271,6 +282,7 @@ void control_bulb_based_on_time(void) {
 
 }
 
+///////////////////////////////////////////////////////////
 
 // Utility: delay in microseconds
 static void delay_us(uint32_t us) {
@@ -371,27 +383,6 @@ float ds18b20_read_temperature() {
     return raw / 16.0;
 }
 
-// Turbidity sensor setup
-void turbidity_sensor_init() {
-    adc1_config_width(ADC_WIDTH);           // Set ADC width
-    adc1_config_channel_atten(TURBIDITY_SENSOR_PIN, ADC_ATTEN); // Set attenuation
-}
-
-// Read turbidity sensor value
-int read_turbidity() {
-    return adc1_get_raw(TURBIDITY_SENSOR_PIN);  // Read the ADC value
-}
-
-// Relay control
-void relay_init() {
-    gpio_reset_pin(RELAY_GPIO);
-    gpio_reset_pin(BULB2_GPIO_PIN);
-    gpio_set_direction(RELAY_GPIO, GPIO_MODE_OUTPUT);
-    gpio_set_direction(BULB2_GPIO_PIN, GPIO_MODE_OUTPUT);
-    gpio_set_level(RELAY_GPIO, 1); // Initially OFF (active-low)
-
-}
-
 void relay_on() {
     gpio_set_level(RELAY_GPIO, 0); // Active-low: 0 = ON BULB2_GPIO_PIN
     gpio_set_level(BULB2_GPIO_PIN, 1);  
@@ -404,10 +395,17 @@ void relay_off() {
     ESP_LOGI(TAG, "Heater turned OFF");
 }
 
-float convert_adc_to_ntu(int adc_value) {
-    // Example linear map: Adjust based on your sensor's datasheet
-    return (3300.0 - adc_value) * (100.0 / 3300.0);
+// Relay control
+void relay_init() {
+    gpio_reset_pin(RELAY_GPIO);
+    gpio_reset_pin(BULB2_GPIO_PIN);
+    gpio_set_direction(RELAY_GPIO, GPIO_MODE_OUTPUT);
+    gpio_set_direction(BULB2_GPIO_PIN, GPIO_MODE_OUTPUT);
+    gpio_set_level(RELAY_GPIO, 1); // Initially OFF (active-low)
+
 }
+
+///////////////////////////////////////////////////
 
 //Filter relay Functions
 void filter_relay_init() {
@@ -416,29 +414,36 @@ void filter_relay_init() {
     gpio_set_direction(FILTER_RELAY_GPIO, GPIO_MODE_OUTPUT);
     gpio_set_direction(BULB3_GPIO_PIN, GPIO_MODE_OUTPUT);
     gpio_set_level(FILTER_RELAY_GPIO, 1); // Initially OFF (active-low)
- 
-    
 }
-
-void filter_on() {
-    gpio_set_level(FILTER_RELAY_GPIO, 0); // Active-low
-    gpio_set_level(BULB3_GPIO_PIN, 1);  
-    ESP_LOGI(TAG, "Water Filter turned ON");
-}
-
-void filter_off() {
-    gpio_set_level(FILTER_RELAY_GPIO, 1);
-    gpio_set_level(BULB3_GPIO_PIN, 0);  
-    ESP_LOGI(TAG, "Water Filter turned OFF");
-}
-
 
 // Main app
 void app_main(void) {
 
+    //SERVO Motor
+
+     // LEDC timer config
+     ledc_timer_config_t ledc_timer = {
+        .speed_mode       = LEDC_LOW_SPEED_MODE,
+        .timer_num        = LEDC_TIMER_0,
+        .duty_resolution  = LEDC_TIMER_16_BIT,
+        .freq_hz          = SERVO_FREQ_HZ,
+        .clk_cfg          = LEDC_AUTO_CLK
+    };
+    ESP_ERROR_CHECK(ledc_timer_config(&ledc_timer));
+
+    // LEDC channel config
+    ledc_channel_config_t ledc_channel = {
+        .gpio_num       = SERVO_PIN,
+        .speed_mode     = LEDC_LOW_SPEED_MODE,
+        .channel        = LEDC_CHANNEL_0,
+        .timer_sel      = LEDC_TIMER_0,
+        .duty           = 0,
+        .hpoint         = 0
+    };
+    ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
+
 // Configure GPIO pi for the bulb
 gpio_set_direction(BULB1_GPIO_PIN, GPIO_MODE_OUTPUT);
-
 
 //Initialize NVS
 esp_err_t ret = nvs_flash_init();
@@ -457,16 +462,24 @@ Set_SystemTime_SNTP();
     gpio_reset_pin(DS18B20_GPIO);
     gpio_set_pull_mode(DS18B20_GPIO, GPIO_PULLUP_ONLY);
     relay_init();
-    turbidity_sensor_init(); 
-    
  // Initialize turbidity sensor
 
- //Filter relay function
- filter_relay_init();
+    // Initialize ADC
+    adc1_config_width(ADC_WIDTH_BIT_12);
+    adc1_config_channel_atten(TURBIDITY_ADC_CHANNEL, ADC_ATTEN_DB_11);  // For wider voltage range
 
+    // Initialize relay GPIO
+    gpio_config_t io_conf = {
+        .pin_bit_mask = (1ULL << FILTER_RELAY_GPIO),
+        .mode = GPIO_MODE_OUTPUT,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .intr_type = GPIO_INTR_DISABLE
+    };
+    gpio_config(&io_conf);
 
- 
- 
+    int relay_one = 0;
+
     bool heater_on = false;
 
     if (!ds18b20_reset()) {
@@ -474,8 +487,8 @@ Set_SystemTime_SNTP();
         return;
     }
 
-    static bool filter_on_flag = false;
-
+    filter_relay_init();
+    
     while (1) {
     //Time show
         Get_current_date_time(Current_Date_Time);
@@ -503,17 +516,64 @@ Set_SystemTime_SNTP();
         }
 
         // Read turbidity sensor value
-        int turbidity = read_turbidity();
-        ESP_LOGI(TAG, "Turbidity Sensor Value: %d", turbidity);
+        int turbidity_value = adc1_get_raw(TURBIDITY_ADC_CHANNEL);
+        ESP_LOGI(TAG, "Turbidity ADC value: %d", turbidity_value);
 
-        if (turbidity < TURBIDITY_THRESHOLD_HIGH && !filter_on_flag) {
-            filter_on();
-            filter_on_flag = true;
-        } else if (turbidity > TURBIDITY_THRESHOLD_LOW && filter_on_flag) {
-            filter_off();
-            filter_on_flag = false;
+        if (turbidity_value > TURBIDITY_THRESHOLD_ON && relay_one == 0) {
+            gpio_set_level(FILTER_RELAY_GPIO, 1);
+            gpio_set_level(BULB3_GPIO_PIN, 0);
+            // Turn ON relay
+            relay_one = 1;
+            ESP_LOGI(TAG, "Filter turned ON");
+
+        } else if (turbidity_value < TURBIDITY_THRESHOLD_OFF && relay_one == 1) {
+            gpio_set_level(FILTER_RELAY_GPIO, 0);
+            gpio_set_level(BULB3_GPIO_PIN, 1); 
+            // Turn OFF relay
+            relay_one = 0;
+            ESP_LOGI(TAG, "Filter turned OFF");
         }
 
-        vTaskDelay(pdMS_TO_TICKS(2000));
+        //SERVO LOOP
+
+        time_t now;
+        struct tm timeinfo;
+        time(&now);
+        localtime_r(&now, &timeinfo);
+
+        int hour = timeinfo.tm_hour;
+        int min = timeinfo.tm_min;
+        int sec = timeinfo.tm_sec;
+
+        gpio_reset_pin(LIGHT_RELAY_GPIO);
+        gpio_set_direction(LIGHT_RELAY_GPIO, GPIO_MODE_OUTPUT);
+
+         if (hour == 11 && min == 00 && sec == 00)
+         {  
+            ESP_LOGI(TAG, "Feeder Time");
+
+            for(int n = 0; n < 3; n++)
+            {
+                // 0 degree
+                ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, servo_us_to_duty(SERVO_MIN_US));
+                ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
+                vTaskDelay(pdMS_TO_TICKS(1000));
+        
+                // 90 degree
+                ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, servo_us_to_duty((SERVO_MIN_US + SERVO_MAX_US) / 2));
+                ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
+                vTaskDelay(pdMS_TO_TICKS(1000));
+
+                // 0 degree
+                ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, servo_us_to_duty(SERVO_MIN_US));
+                ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
+                vTaskDelay(pdMS_TO_TICKS(1000));
+
+                
+            }
+        ESP_LOGI(TAG, "Feeder DONE");  
+         }
+    
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
