@@ -40,8 +40,8 @@
 
 //Heter Relay
 #define RELAY_GPIO 5
-#define TEMP_THRESHOLD_LOW  25.0
-#define TEMP_THRESHOLD_HIGH 26.5
+#define TEMP_THRESHOLD_LOW  35.0
+#define TEMP_THRESHOLD_HIGH 36.5
 
 //TURBIDITY Pin
 #define TURBIDITY_SENSOR_PIN ADC1_CHANNEL_6  // GPIO34 (ADC1 channel 6)
@@ -255,7 +255,7 @@ void control_bulb_based_on_time(void) {
     gpio_set_level(FILTER_RELAY_GPIO, 1);
 
     // Check if the current time is between 06:00 AM and 06:00 PM
-    if ((hour > 18 || (hour == 18 && min >= 00)) && (hour < 22 || (hour == 22 && min < 00))) {
+    if ((hour > 6 || (hour == 6 && min >= 00)) && (hour < 18 || (hour == 18 && min < 00))) {
         // Turn on the bulb (GPIO High)
 
         gpio_set_level(BULB1_GPIO_PIN, 1); // Turn ON  
