@@ -28,6 +28,7 @@ By reducing manual intervention, this smart fish tank not only enhances fish wel
 ##### •	GitHub – Version control and code repository management.
 
 # References 	
+##### • https://www.researchgate.net/publication/345690191_Smart_Aquarium_Management_System
 # Team & Mentor 
 #### Nidukani O.G.H		2019/E/085
 #### Gimhana M.K.G.C		2020/E/045
