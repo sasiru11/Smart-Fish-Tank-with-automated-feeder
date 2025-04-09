@@ -42,8 +42,8 @@
 
 //Heter Relay
 #define RELAY_GPIO 5
-#define TEMP_THRESHOLD_LOW  25.0
-#define TEMP_THRESHOLD_HIGH 26.5
+#define TEMP_THRESHOLD_LOW  24.0
+#define TEMP_THRESHOLD_HIGH 25.5
 
 //TURBIDITY Pin
 
@@ -267,7 +267,7 @@ void control_bulb_based_on_time(void) {
     
 
     // Check if the current time is between 06:00 AM and 06:00 PM
-    if ((hour > 06 || (hour == 06 && min >= 00)) && (hour < 18 || (hour == 18 && min < 00))) {
+    if ((hour > 6 || (hour == 6 && min >= 00)) && (hour < 18 || (hour == 18 && min < 00))) {
         // Turn on the bulb (GPIO High)
         gpio_set_level(BULB1_GPIO_PIN, 1); // Turn ON  
         gpio_set_level(LIGHT_RELAY_GPIO, 0);
@@ -545,7 +545,7 @@ Set_SystemTime_SNTP();
         gpio_reset_pin(LIGHT_RELAY_GPIO);
         gpio_set_direction(LIGHT_RELAY_GPIO, GPIO_MODE_OUTPUT);
 
-         if (hour == 15 && min == 17 && sec == 00)
+         if (hour == 11 && min == 00 && sec == 00)
          {  
             ESP_LOGI(TAG, "Feeder Time");
 
