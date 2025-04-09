@@ -6,7 +6,7 @@ This system integrates sensors to measure water temperature and turbidity, an au
 By reducing manual intervention, this smart fish tank not only enhances fish well-being but also simplifies aquarium maintenance, making it an ideal solution for both hobbyists and professionals.
 
 # Circuit Design 
- ![Image Alt]([image_url](https://github.com/sasiru11/Smart-Fish-Tank-with-automated-feeder/blob/6b6c7159bac2a948b4bbfb543e99c347b4a84137/Design.jpeg))
+ ![Image Alt](https://github.com/sasiru11/Smart-Fish-Tank-with-automated-feeder/blob/9b3696202b89c354136dbe3b12fbbdb5f2d2f203/Design.jpeg)
 # Technologies used  
  ## 1. Microcontroller & Computing Platform
 ##### •	ESP32 – A powerful microcontroller with built-in Wi-Fi and Bluetooth, used to control sensors, actuators, and enable remote monitoring.
