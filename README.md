@@ -34,5 +34,3 @@ By reducing manual intervention, this smart fish tank not only enhances fish wel
 #### Janananda J.S.M.R.R.B	2020/E/057
 #### Gedara S.G.S.N.S		2020/E/210
 
-
-updates on the design, implementation, and code for this project!
