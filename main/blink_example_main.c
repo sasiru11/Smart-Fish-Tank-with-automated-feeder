@@ -497,11 +497,8 @@ Set_SystemTime_SNTP();
     // Control the bulb based on the time
     control_bulb_based_on_time();
 
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-
         //Temp sensor
         ds18b20_start_conversion();
-        vTaskDelay(pdMS_TO_TICKS(750)); // Wait for conversion
 
         float temp = ds18b20_read_temperature();
         ESP_LOGI(TAG, "Water Temperature: %.2f °C", temp);
@@ -548,26 +545,26 @@ Set_SystemTime_SNTP();
         gpio_reset_pin(LIGHT_RELAY_GPIO);
         gpio_set_direction(LIGHT_RELAY_GPIO, GPIO_MODE_OUTPUT);
 
-         if (hour == 11 && min == 00 && sec == 00)
+         if (hour == 15 && min == 17 && sec == 00)
          {  
             ESP_LOGI(TAG, "Feeder Time");
 
-            for(int n = 0; n < 3; n++)
+            for(int n = 0; n < 5; n++)
             {
                 // 0 degree
                 ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, servo_us_to_duty(SERVO_MIN_US));
                 ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
-                vTaskDelay(pdMS_TO_TICKS(1000));
+                vTaskDelay(pdMS_TO_TICKS(250));
         
                 // 90 degree
                 ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, servo_us_to_duty((SERVO_MIN_US + SERVO_MAX_US) / 2));
                 ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
-                vTaskDelay(pdMS_TO_TICKS(1000));
+                vTaskDelay(pdMS_TO_TICKS(250));
 
                 // 0 degree
                 ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, servo_us_to_duty(SERVO_MIN_US));
                 ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
-                vTaskDelay(pdMS_TO_TICKS(1000));
+                vTaskDelay(pdMS_TO_TICKS(250));
 
                 
             }
