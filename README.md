@@ -18,7 +18,6 @@ By reducing manual intervention, this smart fish tank not only enhances fish wel
 ##### •	Water Filter System – Operates when water becomes turbid.
 ##### •	Automatic Feeder – Dispenses fish food at scheduled intervals.
 ## 4. Communication & Data Processing
-##### •	I2C Protocol – Used for sensor communication (e.g., LCD display).
 ##### •	GPIO Pins – Used to connect sensors and actuators directly to the ESP32.
 ##### •	Wi-Fi (ESP32) – Enables remote monitoring and potential app integration.
 ## 5. User Interface
