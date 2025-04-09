@@ -20,11 +20,10 @@ By reducing manual intervention, this smart fish tank not only enhances fish wel
 ##### •	I2C Protocol – Used for sensor communication (e.g., LCD display).
 ##### •	GPIO Pins – Used to connect sensors and actuators directly to the ESP32.
 ##### •	Wi-Fi (ESP32) – Enables remote monitoring and potential app integration.
-## 5. User Interface & Display
-##### •	LCD Display (with I2C module) – Shows real-time sensor data for easy monitoring.
+## 5. User Interface
 ##### •	Mobile App (Planned) – Could be developed in the future using Flutter or another framework for remote access.
 ## 6. Software & Development Tools
-##### •	Platform IO
+##### •	VS Code
 ##### •	ESP IDF
 ##### •	GitHub – Version control and code repository management.
 
