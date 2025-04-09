@@ -5,7 +5,8 @@ Aquariums require constant attention to maintain a healthy environment for fish,
 This system integrates sensors to measure water temperature and turbidity, an automated feeder to dispense food at scheduled intervals, and actuators to regulate the tank’s environment. The ESP32 microcontroller acts as the brain of the system, ensuring real-time monitoring and control. With features like an LCD display and potential mobile app integration, users can easily keep track of their aquarium’s condition.
 By reducing manual intervention, this smart fish tank not only enhances fish well-being but also simplifies aquarium maintenance, making it an ideal solution for both hobbyists and professionals.
 
-# Circuit Design  
+# Circuit Design 
+ ![Image Alt]([image_url](https://github.com/sasiru11/Smart-Fish-Tank-with-automated-feeder/blob/6b6c7159bac2a948b4bbfb543e99c347b4a84137/Design.jpeg))
 # Technologies used  
  ## 1. Microcontroller & Computing Platform
 ##### •	ESP32 – A powerful microcontroller with built-in Wi-Fi and Bluetooth, used to control sensors, actuators, and enable remote monitoring.
